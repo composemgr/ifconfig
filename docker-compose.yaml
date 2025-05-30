@@ -27,8 +27,8 @@ services:
     ports:
       - '172.17.0.1:50001:80'
     volumes:
-      - '/var/lib/srv/root/docker/casjaysdevdocker/ifconfig/latest/rootfs/data:/data:z'
-      - '/var/lib/srv/root/docker/casjaysdevdocker/ifconfig/latest/rootfs/config:/config:z'
+      - '/var/lib/srv/${USER}/docker/ifconfig/rootfs/data/ifconfig:/data:z'
+      - '/var/lib/srv/${USER}/docker/ifconfig/rootfs/config/ifconfig:/config:z'
     networks:
       - ifconfig
 
