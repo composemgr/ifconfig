@@ -21,9 +21,12 @@ services:
     environment:
       - TZ=${TZ:-America/New_York}
       - CONTAINER_PROTOCOL=http
+      - CONTAINER_NAME="ifconfig-app"
       - CONTAINER_WEB_SERVER_PROTOCOL=http
       - HOSTNAME=${BASE_HOST_NAME:-$HOSTNAME}
       - DOMAINNAME=${BASE_DOMAIN_NAME:-$HOSTNAME}
+      - CURRENT_IP_4="${CURRENT_IP_4:-}"
+      - CURRENT_IP_6="${CURRENT_IP_6:-}"
     ports:
       - '172.17.0.1:50001:80'
     volumes:
