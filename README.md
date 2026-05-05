@@ -45,8 +45,8 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/ifconfig` - Data storage
-- `./rootfs/config/ifconfig` - Data storage
+- `./volumes/data/ifconfig` - Data storage
+- `./volumes/config/ifconfig` - Data storage
 
 ## 🔍 Logging
 
