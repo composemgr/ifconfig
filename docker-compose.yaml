@@ -30,8 +30,8 @@ services:
     ports:
       - '172.17.0.1:50001:80'
     volumes:
-      - './rootfs/data/ifconfig:/data:z'
-      - './rootfs/config/ifconfig:/config:z'
+      - './volumes/data/ifconfig:/data:z'
+      - './volumes/config/ifconfig:/config:z'
     networks:
       - ifconfig
 
