@@ -1,0 +1,53 @@
+name: ifconfig
+x-logging: &default-logging
+  options:
+    max-size: '5m'
+    max-file: '1'
+  driver: json-file
+
+services:
+  app:
+    image: casjaysdevdocker/ifconfig:latest
+    container_name: ifconfig-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
+    hostname: ${BASE_HOST_NAME:-$HOSTNAME}
+    restart: always
+    pull_policy: always
+    tty: true
+    stdin_open: true
+    privileged: true
+    logging: *default-logging
+    environment:
+      TZ: ${TZ:-America/New_York}
+      CONTAINER_PROTOCOL: http
+      CONTAINER_NAME: ifconfig-app
+      CONTAINER_WEB_SERVER_PROTOCOL: http
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
+      DOMAINNAME: ${BASE_DOMAIN_NAME:-$HOSTNAME}
+      CURRENT_IP_4: ${CURRENT_IP_4:-}
+      CURRENT_IP_6: ${CURRENT_IP_6:-}
+    volumes:
+      - './volumes/data/ifconfig:/data:z'
+      - './volumes/config/ifconfig:/config:z'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik'
+      - 'traefik.http.routers.app.entrypoints=http'
+      - 'traefik.http.routers.app.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.app.middlewares=app-https-redirect'
+      - 'traefik.http.middlewares.app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.app-secure.entrypoints=https'
+      - 'traefik.http.routers.app-secure.rule=Host(`${BASE_HOST_NAME:-$HOSTNAME}`)'
+      - 'traefik.http.routers.app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.app-secure.service=app'
+      - 'traefik.http.services.app.loadbalancer.server.port=80'
+    networks:
+      - ifconfig
+      - traefik
+
+networks:
+  ifconfig:
+    name: ifconfig
+    external: false
+  traefik:
+    external: true

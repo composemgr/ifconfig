@@ -1,5 +1,4 @@
-# nginx proxy address - http://172.17.0.1:50001
-
+# nginx proxy address - http://172.17.0.1:64207
 name: ifconfig
 x-logging: &default-logging
   options:
@@ -9,8 +8,9 @@ x-logging: &default-logging
 
 services:
   app:
-    image: 'casjaysdevdocker/ifconfig:latest'
+    image: casjaysdevdocker/ifconfig:latest
     container_name: ifconfig-app
+    domainname: ${BASE_DOMAIN_NAME:-example.com}
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     pull_policy: always
@@ -21,43 +21,21 @@ services:
     environment:
       TZ: ${TZ:-America/New_York}
       CONTAINER_PROTOCOL: http
-      CONTAINER_NAME: "ifconfig-app"
+      CONTAINER_NAME: ifconfig-app
       CONTAINER_WEB_SERVER_PROTOCOL: http
       HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       DOMAINNAME: ${BASE_DOMAIN_NAME:-$HOSTNAME}
-      CURRENT_IP_4: "${CURRENT_IP_4:-}"
-      CURRENT_IP_6: "${CURRENT_IP_6:-}"
-    ports:
-      - '172.17.0.1:50001:80'
+      CURRENT_IP_4: ${CURRENT_IP_4:-}
+      CURRENT_IP_6: ${CURRENT_IP_6:-}
     volumes:
       - './volumes/data/ifconfig:/data:z'
       - './volumes/config/ifconfig:/config:z'
+    ports:
+      - '172.17.0.1:64207:80'
     networks:
       - ifconfig
-      - proxy
-      - cloudflare
-    labels:
-      - 'traefik.enable=true'
-      - 'cloudflare.enable=true'
-      - 'traefik.docker.network=proxy'
-      - 'cloudflare.service=http://ifconfig-app:80'
-      - 'cloudflare.hostname=ifconfig.${CLOUDFLARE_ZONE_NAME:-}'
-      - 'traefik.http.routers.ifconfig-app.entrypoints=http'
-      - 'traefik.http.routers.ifconfig-app-secure.tls=true'
-      - 'traefik.http.routers.ifconfig-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
-      - 'traefik.http.middlewares.ifconfig-app-https-redirect.redirectscheme.scheme=https'
-      - 'traefik.http.routers.ifconfig-app.middlewares=ifconfig-app-https-redirect'
-      - 'traefik.http.routers.ifconfig-app-secure.entrypoints=https'
-      - 'traefik.http.routers.ifconfig-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
-      - 'traefik.http.routers.ifconfig-app-secure.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.ifconfig-app-secure.service=ifconfig-app'
-      - 'traefik.http.services.ifconfig-app.loadbalancer.server.port=80'
 
 networks:
   ifconfig:
     name: ifconfig
     external: false
-  proxy:
-    external: true
-  cloudflare:
-    external: true
