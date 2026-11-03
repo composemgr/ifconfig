@@ -26,6 +26,12 @@ services:
       DOMAINNAME: ${BASE_DOMAIN_NAME:-$HOSTNAME}
       CURRENT_IP_4: ${CURRENT_IP_4:-}
       CURRENT_IP_6: ${CURRENT_IP_6:-}
+    healthcheck:
+      test: ['CMD', '/usr/local/bin/entrypoint.sh', 'healthcheck']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     volumes:
       - './volumes/data/ifconfig:/data:z'
       - './volumes/config/ifconfig:/config:z'
